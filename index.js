@@ -39,9 +39,14 @@ const typeDefs = `#graphql
     id: ID!
   }
 
+  enum YesNo {
+  YES
+  NO
+  }
+
   type Query {
     personCount: Int!
-    allPersons: [Person!]!
+    allPersons(phone: YesNo): [Person!]!
     findPerson(name: String!): Person
   }
 
@@ -58,7 +63,35 @@ const typeDefs = `#graphql
 const resolvers = {
   Query: {
     personCount: () => persons.length,
-    allPersons: () => persons,
+    allPersons: (root, args) => {
+      //Si no paso el parametro phone me devuelve todas las personas
+      if (!args.phone) {
+        return persons;
+      }
+      //Si paso el parametro phone:
+      //El (person) representar a cada persona del array persons que es el que llama a la funcion filter que a su vez llama a esta funcion byPhone que
+      const byPhone = (person) =>
+        //Si el parametro es YES me devuelve las personas que tienen definido un phone, sino me devuelve las que no tienen definido un phone
+        //Si args.phone === "YES" el byPhone va a valer person.phone, si este person.phone es distinto de null el elemento se va a conservar y se va a retornar,
+        //si el person.phone es igual a null se va a filtar y no se va a mostrar.
+        //Esto es porque el filter() conserva los elementos para los que byPhone(person) es true
+        //y cualquier valor numerico, por ejemplo "040-123543", es truty, pero "null" es falsy.
+        //Cuando args.phone === "NO" pasa el caso contrario, me devuelve solo los que no tienen un telefono definido
+        args.phone === "YES" ? person.phone : !person.phone;
+      return persons.filter(byPhone);
+
+      //Tambien se puede hacer usando if-else de forma explicita asi:
+
+      // if (!args.phone) {
+      //   return persons;
+      // } else {
+      //   if (args.phone === "YES") {
+      //     return persons.filter((person) => person.phone);
+      //   } else {
+      //     return persons.filter((person) => !person.phone);
+      //   }
+      // }
+    },
     findPerson: (root, args) => persons.find((p) => p.name === args.name),
   },
   Person: {
