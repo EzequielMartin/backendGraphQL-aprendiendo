@@ -1,0 +1,17 @@
+{
+  "name": "graphql-practica-backend",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Ezequiel Martin",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.12.2",
+    "apollo-server": "^3.13.0",
+    "graphql": "^16.11.0"
+  }
+}
